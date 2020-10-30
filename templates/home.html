@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}
+Home
+{% endblock %}
+{% block nav %}
+{% include 'anonymous_user_nav.html'%}
+{% endblock %}
+{% block content %}
+<div class = 'container'>
+    <div class = 'row'>
+        {% for recipe in recipes %}
+        <a class = 'col-4' style="display:block" href="recipes/{{ recipe.id }}">
+            <div>
+                <img src = "{{recipe['image']}}" alt = "{{recipe['title']}}" class = 'img-fluid img-thumbnail'>
+                {{recipe['title']}}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

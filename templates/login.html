@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}
+Login
+{% endblock %}
+{% block content %}
+<div class = 'container'>
+    <form method = 'post'>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          {% for category, message in messages %}
+          <div class ='alert alert-{{ category }}'>{{ message }}</div>
+          {% endfor %}
+          {% endif %}
+      {% endwith %}
+        {% for field in form.errors %}
+        <div class="alert alert-danger">{{ field }}:
+          <ul>
+            {% for error in form.errors[field] %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+        {{ form.hidden_tag() }}
+        <div class = "form-group">
+          {% for field in form if field.widget.input_type != 'hidden' %}
+          <div class = 'form-group'>
+            {{field.label(class = 'col-sm-12 col-form-label')}}
+            {{field(class = 'form-control')}}
+          </div>
+          {% endfor %}
+        </div>
+        <button class = 'btn btn-info'>Login</button>
+        <a href="/signup" class = 'btn btn-primary'>Signup</a>
+      </form>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+<ul class="navbar-nav navbar-right mx-1 my-2 ml-auto">
+    <li class = 'nav-item'>
+        <form action="">
+            <div class="active-cyan-3 active-cyan-4 mb-4">
+              <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+            </div>
+        </form>
+    </li>
+    <li class = 'nav-item'>
+        <a href="/users/{{user.id}}" class = 'nav-link mx-1'><i class="fas fa-user-plus"></i>username : {{ user.username }}</a>
+    </li>
+    <li class = 'nav-item'>
+        <form action="/logout" method = 'POST'>
+            <a onclick="this.parentNode.submit()" class = 'nav-link btn btn-outline-danger mx-1'><i class="fas fa-sign-in-alt"></i>Logout</a>    
+        </form>
+    </li>
+</ul>
