@@ -85,4 +85,7 @@ def logout():
 
 @app.route('/recipes/<int:recipe_id>')
 def recipe(recipe_id):
-    return "recipe"
+    response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
+    recipe = response.json()
+    return render_template('recipe.html', recipe = recipe)
+    #return recipe

@@ -1,0 +1,22 @@
+<div class = 'container mt-4 fluid'>
+    <div class = 'row'>
+        <div class = 'col-auto'>
+            <div class = 'container mt-4 py-2 bg-light fluid'>
+                <h1 class = 'text-center'>Instructions</h1>
+                <ul class = 'list-group'>
+                    {% for instruction in recipe['analyzedInstructions'] %}
+                    <li class = 'list-group-item'>
+                        <ol class = 'list-group'>
+                            {% for step in instruction['steps'] %}
+                                <li class = 'list-group-item'>
+                                    Step {{step['number']}}: {{step['step']}}
+                                </li>
+                            {% endfor %}
+                            </ol>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

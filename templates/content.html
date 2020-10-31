@@ -1,0 +1,14 @@
+<div class = 'container mt-4'>
+    <div class = 'row'>
+        {% for recipe in recipes %}
+        <div class = 'col-4'>
+            <a style="display:block" href="recipes/{{ recipe.id }}">
+                <img src = "{{recipe['image']}}" alt = "{{recipe['title']}}" class = 'img-fluid img-thumbnail'>
+            </a>
+            <p>Name: <a href={{recipe['sourceUrl']}}>{{recipe['title']}}</a></p>
+            <p>Health score: {{recipe['healthScore']}}</p>
+            <p>Price per serving: ${{recipe['pricePerServing']}}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
