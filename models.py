@@ -26,6 +26,12 @@ class User(db.Model):
     gender = db.Column(ChoiceType(GENDER))
     age = db.Column(db.Integer)
 
+    viewed_recipes = db.relationship(
+        "Recipe",
+        secondary = "users_view_receipes",
+        backref = 'viewer'
+    )
+
     liked_recipes = db.relationship(
         "Recipe",
         secondary = "users_like_receipes",
@@ -64,7 +70,7 @@ class User(db.Model):
 class Recipe(db.Model):
     """Table to store different receipe"""
 
-    __tablename__ = 'recipes'
+    __tablename__ = 'receipes'
 
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     name = db.Column(db.String, nullable = False)
@@ -75,14 +81,12 @@ class Recipe(db.Model):
     image = db.Column(db.Text)
 
     ingredients = db.relationship(
-        "Ingredient",
-        secondary = "receipes_ingredients",
+        "Receipe_Ingredient",
         backref = 'recipes'
     )
 
     products = db.relationship(
-        "Product",
-        secondary = "receipes_products",
+        "Receipe_Product",
         backref = 'recipes'
     )
 
@@ -94,6 +98,11 @@ class Ingredient(db.Model):
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     name = db.Column(db.String, unique = True, nullable = False)
 
+    recipes = db.relationship(
+        "Receipe_Ingredient",
+        backref = 'ingredients'
+    )
+
 
 class Product(db.Model):
     """Table to store different products"""
@@ -103,13 +112,22 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     name = db.Column(db.String, unique = True, nullable = False)
 
+class User_View_Receipe(db.Model):
+    """Table to store user viewed receipe relationship"""
+
+    __tablename__ = 'users_view_receipes'
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key = True)
+    receipe_id = db.Column(db.Integer, db.ForeignKey('receipes.id'), primary_key = True)
+    rating = db.Column(db.Integer)
+
 class User_Like_Receipe(db.Model):
     """Table to store user liked receipe relationship"""
 
     __tablename__ = 'users_like_receipes'
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key = True)
-    receipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), primary_key = True)
+    receipe_id = db.Column(db.Integer, db.ForeignKey('receipes.id'), primary_key = True)
     rating = db.Column(db.Integer)
 
 class User_Own_Receipe(db.Model):
@@ -118,7 +136,7 @@ class User_Own_Receipe(db.Model):
     __tablename__ = 'users_own_receipes'
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key = True)
-    receipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), primary_key = True)
+    receipe_id = db.Column(db.Integer, db.ForeignKey('receipes.id'), primary_key = True)
     time_to_cook = db.Column(db.Float)
     cost = db.Column(db.Float)
 
@@ -126,17 +144,20 @@ class Receipe_Ingredient(db.Model):
     """Table to store receipe ingredient relationship"""
 
     __tablename__ = 'receipes_ingredients'
-    receipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), primary_key = True)
-    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredients.id'), primary_key = True)
+
+    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    receipe_id = db.Column(db.Integer, db.ForeignKey('receipes.id'))
+    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredients.id'))
     unit = db.Column(db.String)
     amount = db.Column(db.Float)
+    original = db.Column(db.String)
     calorie = db.Column(db.Integer)
 
 class Receipe_Product(db.Model):
     """Table to store receipe product relationship"""
 
     __tablename__ = 'receipes_products'
-    receipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), primary_key = True)
+    receipe_id = db.Column(db.Integer, db.ForeignKey('receipes.id'), primary_key = True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), primary_key = True)
     unit = db.Column(db.String)
     amount = db.Column(db.Float)

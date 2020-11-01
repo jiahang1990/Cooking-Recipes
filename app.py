@@ -1,6 +1,6 @@
 from flask import Flask, redirect, render_template, flash, session, g, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Recipe, Ingredient, Product
+from models import db, connect_db, User, Recipe, Ingredient, Product, Receipe_Ingredient
 from forms import UserAddForm, LoginForm, UserEditForm
 import requests
 
@@ -72,6 +72,7 @@ def signup():
     if form.validate_on_submit():
         user = User.register(form.username.data, form.password.data, form.email.data)
         db.session.commit()
+        do_login(user)
         return redirect('/')
     else:
         return render_template('signup.html', form = form)
@@ -87,5 +88,47 @@ def logout():
 def recipe(recipe_id):
     response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
     recipe = response.json()
+    if g.user:
+        view_recipe = Recipe.query.get(recipe_id)
+        if view_recipe:
+            view_recipe.viewer.append(g.user)
+        else:
+            view_recipe = Recipe(
+                id = recipe['id'],
+                name = recipe['title'],
+                image = recipe['image'],
+                viewer = [g.user]
+            )
+        ingredients = get_ingredient(recipe)
+        view_recipe.ingredients = get_receipe_ingredient(recipe)
+        db.session.add_all(ingredients)
+        db.session.add(view_recipe)
+        db.session.commit()
     return render_template('recipe.html', recipe = recipe)
-    #return recipe
+
+def get_ingredient(recipe):
+    ingredient_ids = [ingredient['id'] for ingredient in recipe['extendedIngredients']]
+    ingredient_ids = list(set(ingredient_ids))
+    ingredients = []
+    for id in ingredient_ids:
+        new_ingredient = Ingredient.query.get(id)
+        if not new_ingredient:  
+            response = requests.get(f'https://api.spoonacular.com/food/ingredients/{id}/information?apiKey={API_KEY}')
+            data = response.json()
+            new_ingredient = Ingredient(
+                id = data['id'],
+                name = data['name']
+            )
+        ingredients.append(new_ingredient)
+    return ingredients
+
+def get_receipe_ingredient(recipe):
+    receipe_ingredients = []
+    for ingredient in recipe['extendedIngredients']:
+        receipe_ingredient = Receipe_Ingredient(
+            receipe_id = recipe['id'],
+            ingredient_id = ingredient['id'],
+            original = ingredient['original']
+        )
+        receipe_ingredients.append(receipe_ingredient)
+    return receipe_ingredients
