@@ -3,12 +3,13 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Recipe, Ingredient, Product, Receipe_Ingredient
 from forms import UserAddForm, LoginForm, UserEditForm
 import requests
+import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///recepies-app'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','postgresql:///recepies-app')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
-app.config['SECRET_KEY'] ='secret'
+app.config['SECRET_KEY'] =os.environ.get('SECRET_KEY','secret') 
 
 connect_db(app)
 db.create_all()
@@ -44,10 +45,7 @@ def do_logout():
 def home():
     response = requests.get(f'https://api.spoonacular.com/recipes/random?apiKey={API_KEY}&number=30')
     recipes = response.json()['recipes']
-    if g.user:
-        return render_template('user_home.html', user = g.user, recipes = recipes)
-    else:
-        return render_template('home.html', recipes = recipes)
+    return render_template('home.html', user = g.user, recipes = recipes)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -104,7 +102,7 @@ def recipe(recipe_id):
         db.session.add_all(ingredients)
         db.session.add(view_recipe)
         db.session.commit()
-    return render_template('recipe.html', recipe = recipe)
+    return render_template('recipe.html', user = g.user, recipe = recipe)
 
 def get_ingredient(recipe):
     ingredient_ids = [ingredient['id'] for ingredient in recipe['extendedIngredients']]

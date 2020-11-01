@@ -3,8 +3,15 @@
 Recipe
 {% endblock %}
 {% block nav %}
+{% include 'user_nav_section.html' %}
 {% endblock %}
 {% block content %}
+
+<div class = 'container mt-4 fluid'>
+    <img src = "{{recipe['image']}}" alt = "{{recipe['title']}}" class = 'img-fluid img-thumbnail'>
+    <p><a href={{recipe['sourceUrl']}}>{{recipe['title']}}</a></p>
+</div>
+
 {% include 'ingredient.html' %}
 {% include 'instruction.html' %}
 {% endblock %}
