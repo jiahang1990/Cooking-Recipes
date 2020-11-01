@@ -1,0 +1,24 @@
+<ul class="navbar-nav navbar-right mx-1 my-2 ml-auto">
+    <form action="" class="form-inline mx-1">
+        <div class="active-cyan-3 active-cyan-4">
+            <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+        </div>
+    </form>
+    {% if user %}
+    <li class = 'nav-item'>
+        <a href="/users/{{user.id}}" class = 'nav-link mx-1'>username : {{ user.username }}</a>
+    </li>
+    <li class = 'nav-item'>
+        <form action="/logout" method = 'POST'>
+            <a onclick="this.parentNode.submit()" class = 'nav-link btn btn-outline-danger mx-1'>Logout</a>    
+        </form>
+    </li>
+    {% else %}
+    <li class = 'nav-item'>
+        <a href="/login" class = 'nav-link btn btn-outline-info mx-1'>Login</a>
+    </li>
+    <li class = 'nav-item'>
+        <a href="/signup" class = 'nav-link btn btn-outline-primary mx-1'>Signup</a>
+    </li>
+    {% endif %}
+</ul>
