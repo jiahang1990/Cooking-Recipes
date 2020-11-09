@@ -4,7 +4,7 @@
             <div class = 'container mt-4 py-2 bg-light fluid'>
                 <h1 class = 'text-center'>Ingredient</h1>
                 <ul class = 'list-group'>
-                    {% for ingredient in recipe['extendedIngredients'] %}
+                    {% for ingredient in recipe['ingredients'] %}
                     <li class = 'list-group-item'>
                         <p>{{ingredient['original']}}</p>
                     </li>
