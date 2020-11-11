@@ -27,7 +27,6 @@ def add_user_to_g():
     else:
         g.user = None
 
-
 def do_login(user):
     """Log in user."""
 
@@ -56,8 +55,6 @@ def login():
         user = User.authenticate(username, password)
         if user:
             do_login(user)
-            response = requests.get(f'https://api.spoonacular.com/recipes/random?apiKey={API_KEY}&number=30')
-            recipes = response.json()['recipes']
             return redirect('/')
         else:
             flash('Username or password is not correct','danger')
@@ -84,25 +81,33 @@ def logout():
 
 @app.route('/recipes/<int:recipe_id>')
 def recipe(recipe_id):
-    response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
-    recipe = response.json()
     if g.user:
         view_recipe = Recipe.query.get(recipe_id)
         if view_recipe:
             view_recipe.viewer.append(g.user)
         else:
+            response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
+            recipe = response.json()
             view_recipe = Recipe(
                 id = recipe['id'],
                 name = recipe['title'],
                 image = recipe['image'],
                 viewer = [g.user]
             )
-        ingredients = get_ingredient(recipe)
-        view_recipe.ingredients = get_receipe_ingredient(recipe)
-        db.session.add_all(ingredients)
-        db.session.add(view_recipe)
-        db.session.commit()
-    return render_template('recipe.html', user = g.user, recipe = recipe)
+            ingredients = get_ingredient(recipe)
+            view_recipe.ingredients = get_receipe_ingredient(recipe)
+            db.session.add_all(ingredients)
+            db.session.add(view_recipe)
+            db.session.commit()
+    else:
+        response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
+        recipe = response.json()
+        view_recipe = Recipe(
+            id = recipe['id'],
+            name = recipe['title'],
+            image = recipe['image']
+        )
+    return render_template('recipe.html', user = g.user, recipe = view_recipe)
 
 def get_ingredient(recipe):
     ingredient_ids = [ingredient['id'] for ingredient in recipe['extendedIngredients']]

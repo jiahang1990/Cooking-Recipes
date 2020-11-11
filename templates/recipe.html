@@ -8,8 +8,8 @@ Recipe
 {% block content %}
 
 <div class = 'container mt-4 fluid'>
-    <img src = "{{recipe['image']}}" alt = "{{recipe['title']}}" class = 'img-fluid img-thumbnail'>
-    <p><a href={{recipe['sourceUrl']}}>{{recipe['title']}}</a></p>
+    <img src = "{{recipe['image']}}" alt = "{{recipe['name']}}" class = 'img-fluid img-thumbnail'>
+    <p>{{recipe['title']}}</p>
 </div>
 
 {% include 'ingredient.html' %}
