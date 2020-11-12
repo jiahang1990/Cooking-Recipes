@@ -83,3 +83,5 @@ After sign up, user will be redirect to home page with his/her username on the n
 
 ####route: /login
 This route is for registerd user, if username or password dont match, it will show errors after click Login button
+
+After login, user will be redirect to home page with his/her username on the navigation bar, and logout button
