@@ -15,7 +15,9 @@ connect_db(app)
 db.create_all()
 
 CURR_USER_KEY = 'curr_user'
-API_KEY = 'e513efac6a474bdcb825b99430ce9444'
+#API_KEY = 'e513efac6a474bdcb825b99430ce9444'
+API_KEY = '1b579a9b11e746dcbddac1e89608d2d5'
+RECEIPE_DEFAULT_IMG = '/static/images/recipe_default.gif'
 
 @app.before_request
 def add_user_to_g():
@@ -81,17 +83,17 @@ def logout():
 
 @app.route('/recipes/<int:recipe_id>')
 def recipe(recipe_id):
+    view_recipe = Recipe.query.get(recipe_id)
+    response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
+    recipe = response.json()
     if g.user:
-        view_recipe = Recipe.query.get(recipe_id)
         if view_recipe:
             view_recipe.viewer.append(g.user)
         else:
-            response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
-            recipe = response.json()
             view_recipe = Recipe(
                 id = recipe['id'],
                 name = recipe['title'],
-                image = recipe['image'],
+                image = recipe.get('image',RECEIPE_DEFAULT_IMG),
                 viewer = [g.user]
             )
             ingredients = get_ingredient(recipe)
@@ -100,14 +102,21 @@ def recipe(recipe_id):
             db.session.add(view_recipe)
             db.session.commit()
     else:
-        response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
-        recipe = response.json()
-        view_recipe = Recipe(
-            id = recipe['id'],
-            name = recipe['title'],
-            image = recipe['image']
-        )
-    return render_template('recipe.html', user = g.user, recipe = view_recipe)
+        if view_recipe:
+            view_recipe.viewer.append(g.user)
+        else:
+            view_recipe = Recipe(
+                id = recipe['id'],
+                name = recipe['title'],
+                image = recipe.get('image',RECEIPE_DEFAULT_IMG),
+                viewer = []
+            )
+            ingredients = get_ingredient(recipe)
+            view_recipe.ingredients = get_receipe_ingredient(recipe)
+            db.session.add_all(ingredients)
+            db.session.add(view_recipe)
+            db.session.commit()
+    return render_template('recipe.html', user = g.user, recipe = recipe)
 
 def get_ingredient(recipe):
     ingredient_ids = [ingredient['id'] for ingredient in recipe['extendedIngredients']]

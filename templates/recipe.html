@@ -8,7 +8,7 @@ Recipe
 {% block content %}
 
 <div class = 'container mt-4 fluid'>
-    <img src = "{{recipe['image']}}" alt = "{{recipe['name']}}" class = 'img-fluid img-thumbnail'>
+    <img src = "{{recipe['image']}}" onerror="this.onerror=null; this.src='/static/images/recipe_default.gif'" alt = "{{recipe['title']}}" class = 'img-fluid img-thumbnail'>
     <p>{{recipe['title']}}</p>
 </div>
 

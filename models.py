@@ -4,7 +4,7 @@ from sqlalchemy_utils.types.choice import ChoiceType
 
 db = SQLAlchemy()
 USER_DEFAULT_IMG = '/static/images/profile_default.jpg'
-RECEIPE_DEFAULT_IMG = '/static/images/receipe_default.gif'
+RECEIPE_DEFAULT_IMG = '/static/images/recipe_default.gif'
 bcrypt = Bcrypt()
 
 class User(db.Model):
