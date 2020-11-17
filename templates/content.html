@@ -1,14 +1,18 @@
 <div class = 'container mt-4'>
     <div class = 'row'>
+        {% if recipes %}
         {% for recipe in recipes %}
-        <div class = 'col-4'>
+        <div class = 'col-4 bg-light'>
             <a style="display:block" href="recipes/{{ recipe.id }}">
                 <img src = "{{recipe['image']}} " onerror="this.onerror=null; this.src='/static/images/recipe_default.gif'" alt = "{{recipe['title']}}" class = 'img-fluid img-thumbnail'>
             </a>
-            <p>Name: <a href={{recipe['sourceUrl']}}>{{recipe['title']}}</a></p>
-            <p>Health score: {{recipe['healthScore']}}</p>
-            <p>Price per serving: ${{recipe['pricePerServing']}}</p>
+            <p>Name:{{recipe['title']}}</a></p>
         </div>
         {% endfor %}
+        {% else %}
+        <div class = 'col-4 bg-light'>
+            No Result Found...
+        </div>
+        {% endif %}
     </div>
 </div>

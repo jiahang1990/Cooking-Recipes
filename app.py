@@ -1,12 +1,12 @@
-from flask import Flask, redirect, render_template, flash, session, g, jsonify
+from flask import Flask, redirect, request, render_template, flash, session, g, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Recipe, Ingredient, Product, Receipe_Ingredient
+from models import db, connect_db, User, Recipe, Ingredient, Product, Recipe_Ingredient
 from forms import UserAddForm, LoginForm, UserEditForm
 import requests
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','postgresql:///recepies-app')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','postgresql:///recipes-app')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] =os.environ.get('SECRET_KEY','secret') 
@@ -25,7 +25,6 @@ def add_user_to_g():
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
-
     else:
         g.user = None
 
@@ -90,6 +89,8 @@ def recipe(recipe_id):
         if view_recipe:
             view_recipe.viewer.append(g.user)
         else:
+            response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
+            recipe = response.json()
             view_recipe = Recipe(
                 id = recipe['id'],
                 name = recipe['title'],
@@ -118,6 +119,15 @@ def recipe(recipe_id):
             db.session.commit()
     return render_template('recipe.html', user = g.user, recipe = recipe)
 
+@app.route('/search')
+def search():
+    search_type = request.args.get('type')
+    search_term = request.args.get('term')
+    response = requests.get(f'https://api.spoonacular.com/recipes/complexSearch?apiKey={API_KEY}&query={search_term}')
+    recipes = response.json()['results']
+    return render_template('home.html', user = g.user, recipes = recipes)
+
+
 def get_ingredient(recipe):
     ingredient_ids = [ingredient['id'] for ingredient in recipe['extendedIngredients']]
     ingredient_ids = list(set(ingredient_ids))
@@ -134,13 +144,13 @@ def get_ingredient(recipe):
         ingredients.append(new_ingredient)
     return ingredients
 
-def get_receipe_ingredient(recipe):
-    receipe_ingredients = []
+def get_recipe_ingredient(recipe):
+    recipe_ingredients = []
     for ingredient in recipe['extendedIngredients']:
-        receipe_ingredient = Receipe_Ingredient(
-            receipe_id = recipe['id'],
+        recipe_ingredient = Recipe_Ingredient(
+            recipe_id = recipe['id'],
             ingredient_id = ingredient['id'],
             original = ingredient['original']
         )
-        receipe_ingredients.append(receipe_ingredient)
-    return receipe_ingredients
+        recipe_ingredients.append(recipe_ingredient)
+    return recipe_ingredients
