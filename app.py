@@ -118,6 +118,15 @@ def recipe(recipe_id):
             db.session.commit()
     return render_template('recipe.html', user = g.user, recipe = recipe)
 
+@app.route('/search')
+def search():
+    search_type = request.args.get('type')
+    search_term = request.args.get('term')
+    response = requests.get(f'https://api.spoonacular.com/recipes/complexSearch?apiKey={API_KEY}&query={search_term}')
+    recipes = response.json()['results']
+    return render_template('home.html', user = g.user, recipes = recipes)
+
+
 def get_ingredient(recipe):
     ingredient_ids = [ingredient['id'] for ingredient in recipe['extendedIngredients']]
     ingredient_ids = list(set(ingredient_ids))
