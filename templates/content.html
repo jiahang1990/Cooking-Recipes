@@ -4,7 +4,7 @@
         {% for recipe in recipes %}
         <div class = 'col-4 bg-light'>
             <a style="display:block" href="recipes/{{ recipe.id }}">
-                <img src = "{{recipe['image']}}" alt = "{{recipe['title']}}" class = 'img-fluid img-thumbnail'>
+                <img src = "{{recipe['image']}} " onerror="this.onerror=null; this.src='/static/images/recipe_default.gif'" alt = "{{recipe['title']}}" class = 'img-fluid img-thumbnail'>
             </a>
             <p>Name:{{recipe['title']}}</a></p>
         </div>

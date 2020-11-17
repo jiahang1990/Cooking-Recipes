@@ -17,6 +17,7 @@ db.create_all()
 CURR_USER_KEY = 'curr_user'
 #API_KEY = 'e513efac6a474bdcb825b99430ce9444'
 API_KEY = '1b579a9b11e746dcbddac1e89608d2d5'
+RECEIPE_DEFAULT_IMG = '/static/images/recipe_default.gif'
 
 @app.before_request
 def add_user_to_g():
@@ -26,7 +27,6 @@ def add_user_to_g():
         g.user = User.query.get(session[CURR_USER_KEY])
     else:
         g.user = None
-
 
 def do_login(user):
     """Log in user."""
@@ -56,8 +56,6 @@ def login():
         user = User.authenticate(username, password)
         if user:
             do_login(user)
-            response = requests.get(f'https://api.spoonacular.com/recipes/random?apiKey={API_KEY}&number=30')
-            recipes = response.json()['recipes']
             return redirect('/')
         else:
             flash('Username or password is not correct','danger')
@@ -84,8 +82,10 @@ def logout():
 
 @app.route('/recipes/<int:recipe_id>')
 def recipe(recipe_id):
+    view_recipe = Recipe.query.get(recipe_id)
+    response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
+    recipe = response.json()
     if g.user:
-        view_recipe = Recipe.query.get(recipe_id)
         if view_recipe:
             view_recipe.viewer.append(g.user)
         else:
@@ -94,34 +94,30 @@ def recipe(recipe_id):
             view_recipe = Recipe(
                 id = recipe['id'],
                 name = recipe['title'],
-                image = recipe['image'],
-                viewer = [g.user],
-                instructions = [step['step'] for step in recipe['analyzedInstructions'][0]['steps']]
+                image = recipe.get('image',RECEIPE_DEFAULT_IMG),
+                viewer = [g.user]
             )
             ingredients = get_ingredient(recipe)
-            view_recipe.ingredients = get_recipe_ingredient(recipe)
+            view_recipe.ingredients = get_receipe_ingredient(recipe)
             db.session.add_all(ingredients)
             db.session.add(view_recipe)
             db.session.commit()
-        return render_template('recipe.html', user = g.user, recipe = view_recipe)
     else:
-        view_recipe = Recipe.query.get(recipe_id)
-        if not view_recipe:
-            response = requests.get(f'https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={API_KEY}&includeNutrition=false')
-            recipe = response.json()
+        if view_recipe:
+            view_recipe.viewer.append(g.user)
+        else:
             view_recipe = Recipe(
                 id = recipe['id'],
                 name = recipe['title'],
-                image = recipe['image'],
-                viewer = [],
-                instructions = [step['step'] for step in recipe['analyzedInstructions'][0]['steps']]
+                image = recipe.get('image',RECEIPE_DEFAULT_IMG),
+                viewer = []
             )
             ingredients = get_ingredient(recipe)
-            view_recipe.ingredients = get_recipe_ingredient(recipe)
+            view_recipe.ingredients = get_receipe_ingredient(recipe)
             db.session.add_all(ingredients)
             db.session.add(view_recipe)
             db.session.commit()
-        return render_template('recipe.html', user = g.user, recipe = view_recipe)
+    return render_template('recipe.html', user = g.user, recipe = recipe)
 
 @app.route('/search')
 def search():
