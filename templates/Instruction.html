@@ -6,9 +6,9 @@
                 <ul class = 'list-group'>
                     <li class = 'list-group-item'>
                         <ol class = 'list-group'>
-                            {% for step in recipe['instructions'] %}
+                            {% for step in recipe['analyzedInstructions'][0]['steps'] %}
                                 <li class = 'list-group-item'>
-                                    {{step}}
+                                    {{step['step']}}
                                 </li>
                             {% endfor %}
                             </ol>

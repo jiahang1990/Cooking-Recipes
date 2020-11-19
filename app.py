@@ -98,7 +98,7 @@ def recipe(recipe_id):
                 viewer = [g.user]
             )
             ingredients = get_ingredient(recipe)
-            view_recipe.ingredients = get_receipe_ingredient(recipe)
+            view_recipe.ingredients = get_recipe_ingredient(recipe)
             db.session.add_all(ingredients)
             db.session.add(view_recipe)
             db.session.commit()
@@ -113,7 +113,7 @@ def recipe(recipe_id):
                 viewer = []
             )
             ingredients = get_ingredient(recipe)
-            view_recipe.ingredients = get_receipe_ingredient(recipe)
+            view_recipe.ingredients = get_recipe_ingredient(recipe)
             db.session.add_all(ingredients)
             db.session.add(view_recipe)
             db.session.commit()
