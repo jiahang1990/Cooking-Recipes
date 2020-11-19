@@ -15,8 +15,8 @@ connect_db(app)
 db.create_all()
 
 CURR_USER_KEY = 'curr_user'
-#API_KEY = 'e513efac6a474bdcb825b99430ce9444'
-API_KEY = '1b579a9b11e746dcbddac1e89608d2d5'
+API_KEY = 'e513efac6a474bdcb825b99430ce9444'
+#API_KEY = '1b579a9b11e746dcbddac1e89608d2d5'
 RECEIPE_DEFAULT_IMG = '/static/images/recipe_default.gif'
 
 @app.before_request
