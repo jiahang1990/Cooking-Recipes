@@ -9,7 +9,7 @@ import os
 from unittest import TestCase
 from sqlalchemy import exc
 
-from models import db, User, Recipe, Ingredient, Receipe_Ingredient, User_View_Receipe
+from models import db, User, Recipe, Ingredient, Recipe_Ingredient, User_View_Recipe
 
 # BEFORE we import our app, let's set an environmental variable
 # to use a different database for tests (we need to do this
@@ -21,7 +21,7 @@ os.environ['DATABASE_URL'] = "postgresql:///recipes-test"
 
 # Now we can import app
 
-from app import app, get_ingredient, get_receipe_ingredient
+from app import app, get_ingredient, get_recipe_ingredient
 
 # Create our tables (we do this here, so we only create the tables
 # once for all tests --- in each test, we'll delete the data
@@ -35,8 +35,8 @@ class RecipeModelTestCase(TestCase):
     def setUp(self):
         """Create test client, add sample data."""
 
-        Receipe_Ingredient.query.delete()
-        User_View_Receipe.query.delete()
+        Recipe_Ingredient.query.delete()
+        User_View_Recipe.query.delete()
         Recipe.query.delete()
         Ingredient.query.delete()
         User.query.delete()
@@ -51,7 +51,7 @@ class RecipeModelTestCase(TestCase):
         db.session.commit()
         recipe = Recipe(
             name = 'Pasta and Seafood',
-            colories = 320,
+            calories = 320,
             rating = 4.5,
             cost = 34,
             time_to_cook = 120,
@@ -90,8 +90,8 @@ class RecipeModelTestCase(TestCase):
         self.assertEqual(Ingredient.query.get(3333).name,'sugar')
         self.assertEqual(Ingredient.query.get(4444).name,'salt')
 
-        ri1 = Receipe_Ingredient(
-            receipe_id = 1234,
+        ri1 = Recipe_Ingredient(
+            recipe_id = 1234,
             ingredient_id = 3333,
             unit = 'tsp',
             amount = 2,
@@ -99,8 +99,8 @@ class RecipeModelTestCase(TestCase):
             calorie = 40
         )
 
-        ri2 = Receipe_Ingredient(
-            receipe_id = 1234,
+        ri2 = Recipe_Ingredient(
+            recipe_id = 1234,
             ingredient_id = 4444,
             unit = 'tsp',
             amount = 1,

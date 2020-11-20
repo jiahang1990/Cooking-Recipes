@@ -9,7 +9,7 @@ import os
 from unittest import TestCase
 #from flask_testing import TestCase
 
-from models import db, User, Recipe, Receipe_Ingredient, User_View_Receipe, Ingredient
+from models import db, User, Recipe, Recipe_Ingredient, User_View_Recipe, Ingredient
 
 # BEFORE we import our app, let's set an environmental variable
 # to use a different database for tests (we need to do this
@@ -27,10 +27,10 @@ class home_view(TestCase):
     def setUp(self):
         """Create test client, add sample data."""
 
-        db.drop_all()
+        #db.drop_all()
         db.create_all()
-        Receipe_Ingredient.query.delete()
-        User_View_Receipe.query.delete()
+        Recipe_Ingredient.query.delete()
+        User_View_Recipe.query.delete()
         Recipe.query.delete()
         Ingredient.query.delete()
         User.query.delete()
@@ -45,7 +45,7 @@ class home_view(TestCase):
         db.session.commit()
         recipe = Recipe(
             name = 'Pasta and Seafood',
-            colories = 320,
+            calories = 320,
             rating = 4.5,
             cost = 34,
             time_to_cook = 120,
@@ -83,6 +83,4 @@ class home_view(TestCase):
             self.assertIn('Logout', html)
             self.assertIn('<img src =',html)
             self.assertIn('<p>Name:',html)
-            self.assertIn('<p>Health score:',html)
-            self.assertIn('<p>Price per serving:',html)
 

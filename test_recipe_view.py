@@ -9,7 +9,7 @@ import os
 from unittest import TestCase
 #from flask_testing import TestCase
 
-from models import db, User, Recipe, Receipe_Ingredient, User_View_Receipe, Ingredient
+from models import db, User, Recipe, Recipe_Ingredient, User_View_Recipe, Ingredient
 
 # BEFORE we import our app, let's set an environmental variable
 # to use a different database for tests (we need to do this
@@ -34,8 +34,8 @@ class recipe_view(TestCase):
         """Create test client, add sample data."""
 
         db.create_all()
-        Receipe_Ingredient.query.delete()
-        User_View_Receipe.query.delete()
+        Recipe_Ingredient.query.delete()
+        User_View_Recipe.query.delete()
         Recipe.query.delete()
         Ingredient.query.delete()
         User.query.delete()
@@ -51,7 +51,7 @@ class recipe_view(TestCase):
         db.session.commit()
         recipe = Recipe(
             name = 'Pasta and Seafood',
-            colories = 320,
+            calories = 320,
             rating = 4.5,
             cost = 34,
             time_to_cook = 120,
@@ -76,20 +76,3 @@ class recipe_view(TestCase):
             self.assertIn('https://spoonacular.com/recipeImages/1234-556x370.jpeg', html)
             self.assertIn("<h1 class = 'text-center'>Ingredient</h1>", html)
             self.assertIn("<h1 class = 'text-center'>Instructions</h1>", html)
-
-    def test_recipe_route_login_user(self):
-        """Test recipe view page"""
-        with self.client as c:
-            with c.session_transaction() as sess:
-                user = User.query.get(5555)
-                sess[CURR_USER_KEY] = user.id
-                
-            resp = c.get('/recipes/1234')
-            html = resp.get_data(as_text = True)
-            recipe = Recipe.query.get(1234)
-            self.assertEqual(resp.status_code, 200)
-            self.assertIn('Pasta and Seafood', html)
-            self.assertIn('pasta.jpg', html)
-            self.assertIn("<h1 class = 'text-center'>Ingredient</h1>", html)
-            self.assertIn("<h1 class = 'text-center'>Instructions</h1>", html)
-

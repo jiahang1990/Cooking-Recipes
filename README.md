@@ -85,3 +85,8 @@ After sign up, user will be redirect to home page with his/her username on the n
 This route is for registerd user, if username or password dont match, it will show errors after click Login button
 
 After login, user will be redirect to home page with his/her username on the navigation bar, and logout button
+
+####route: /search
+This route is both registered or anonymous users, you can type in your search key word in the search box and click submit to show the search result, if no result founded it will show a message "No result found"
+
+You can go back to the home page by click the logo

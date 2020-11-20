@@ -8,7 +8,7 @@
 import os
 from unittest import TestCase
 
-from models import db, User, Recipe, Receipe_Ingredient, User_View_Receipe, Ingredient
+from models import db, User, Recipe, Recipe_Ingredient, User_View_Recipe, Ingredient
 
 # BEFORE we import our app, let's set an environmental variable
 # to use a different database for tests (we need to do this
@@ -55,8 +55,8 @@ class recipe_view(TestCase):
             resp = c.get('/login')
             html = resp.get_data(as_text = True)
             self.assertEqual(resp.status_code, 200)
-            self.assertIn("<button class = 'btn btn-info'>Login</button>", html)
-            self.assertIn("<a href='/signup' class = 'btn btn-primary'>Signup</a>", html)
+            self.assertIn("<button class = 'btn btn-primary'>Login</button>", html)
+            self.assertIn("<a href='/signup' class = 'btn btn-info'>Signup</a>", html)
 
     def test_login_post(self):
         """Test login view page"""
@@ -73,7 +73,7 @@ class recipe_view(TestCase):
             html = resp.get_data(as_text = True)
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Login</a>", html)
-            self.assertIn("<button class = 'btn btn-primary'>Signup</button>", html)
+            self.assertIn("<button class = 'btn btn-primary'>Submit</button>", html)
 
     def test_signup_post(self):
         """Test signup view page"""
@@ -98,8 +98,6 @@ class recipe_view(TestCase):
             self.assertIn('Logout', html)
             self.assertIn('<img src =',html)
             self.assertIn('<p>Name:',html)
-            self.assertIn('<p>Health score:',html)
-            self.assertIn('<p>Price per serving:',html)
             resp = c.post('/signup', data = {'username':'testsignupuser2','password':'password','email':'usertest@gmail.com'}, follow_redirects = True)
             html = resp.get_data(as_text = True)
             self.assertIn('This username already exsits, please login', html)
